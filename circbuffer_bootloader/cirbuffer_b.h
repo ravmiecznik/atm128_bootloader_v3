@@ -25,7 +25,7 @@ public:
 	bool put(uint8_t byte);
 	uint8_t get();
 	uint16_t available();
-	uint16_t free();
+	uint16_t free_space();
 	void flush();
 	void flush(uint32_t amount);
 	void peek_sync(CircBufferB* peek_cbuffer);

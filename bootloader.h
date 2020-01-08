@@ -10,6 +10,7 @@
 
 #include <avr/boot.h>
 #include "circbuffer_bootloader/cirbuffer_b.h"
+#include <avr/pgmspace.h>
 
 #define LED_RED PD6
 #define LED_BLUE PD7
@@ -21,11 +22,24 @@
 #define PIN_VAL(PORT, PIN) (PORT & _BV(PIN))
 #define MOSI_PIN PE0
 
+//this macro will create string in PGMSPACE with the same content as name like: rav = "rav"
+#define P(_NAME) const char PROGMEM _NAME [] = #_NAME
+
+//this macro will create only PGM array name (PROGMEM STRING ARRAY)
+#define PSA(_NAME) const char PROGMEM _NAME []
+
+
+P(ack);
+P(nak);
+P(dtx);
+
 void write_page_to_flash_mem(uint32_t strona, uint8_t *buf) BOOTLOADER_SECTION;
 
 namespace rx_id{
 	enum id{
+		txt_command,
 		write_at,
+		rxflush,
 		fail,
 	};
 }

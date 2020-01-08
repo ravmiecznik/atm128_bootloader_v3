@@ -15,6 +15,7 @@
 #include <stdio.h>
 
 
+
 /****************************************************************/
 /*
  * Configuration of standard output for functions printf, printf_p and so on
@@ -23,12 +24,12 @@ static int put(char c, FILE *stream){
 	uart1_putc(c);
 	return 0;
 }
-static FILE uartout = {0};
-void setup_stdout_for_printf(){
-	fdev_setup_stream(&uartout, put, NULL, _FDEV_SETUP_WRITE);
-	stdout = &uartout;
-	stderr = &uartout;
-}
+//static FILE uartout = {0};
+//void setup_stdout_for_printf(){
+//	fdev_setup_stream(&uartout, put, NULL, _FDEV_SETUP_WRITE);
+//	stdout = &uartout;
+//	stderr = &uartout;
+//}
 /****************************************************************/
 
 
@@ -46,7 +47,7 @@ int main(){
 	DDRB &= ~_BV(BOOTLOADER_PINB);
 	PIN_HI(PORTB, BOOTLOADER_PINB);
 #endif
-	setup_stdout_for_printf();
+	//setup_stdout_for_printf();
 	uart1_init(115200);
 	//_delay_ms(500);
 	CircBufferB cbuffer;
@@ -83,18 +84,19 @@ int main(){
 					RxMessage rxmessage(cbuffer);
 					rx_id::id msg_id = rxmessage.msg_id();
 					switch (msg_id) {
-//						case rx_id::fail:
-//							printf("fail\n");
-//							break;
-//						case rx_id::write_at:
-//							printf("write at\n");
-//							break;
+						case rx_id::fail:
+							//printf_P(nak);
+							break;
+						case rx_id::write_at:
+							//write_page_to_flash_mem(0, (uint8_t*)"");
+							//printf_P(ack);
+							break;
+						case rx_id::txt_command:
+							//printf_P(ack);
+							break;
 						default:
 							cbuffer.flush(sizeof(MessageHeader));
-							printf("\n");
-							for(uint8_t i=0; i< rxmessage.header.msg_len; i++){
-								printf("%c", cbuffer.get());
-							}
+							//printf_P(dtx);
 							break;
 					}
 				}

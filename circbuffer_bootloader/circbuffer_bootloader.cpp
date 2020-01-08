@@ -20,7 +20,7 @@ CircBufferB::CircBufferB(CircBufferB* cbuffer_ptr){
 }
 
 bool CircBufferB::put(uint8_t byte){
-	if(free() == 0){
+	if(free_space() == 0){
 		return false;
 	}
 	else{
@@ -51,7 +51,7 @@ uint16_t CircBufferB::available(){
 	return _available;
 }
 
-uint16_t CircBufferB::free(){
+uint16_t CircBufferB::free_space(){
 	return CBUFFER_SIZE - available();
 }
 

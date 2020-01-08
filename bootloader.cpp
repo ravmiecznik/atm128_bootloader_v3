@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <avr/boot.h>
 
+
+
 void write_page_to_flash_mem(uint32_t page, uint8_t *buf){
 	uint16_t i;
 	uint8_t sreg;
