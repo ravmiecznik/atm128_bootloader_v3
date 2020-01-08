@@ -10,3 +10,4 @@ maximum number of Retx.
 
 TODO:   RxMessage must calculate CRC
         TxMessage must be implemented
+        After removal of printf of stdout.h implement puts function in uart, removal of printf frees extra 2kbytes of program size
