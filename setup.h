@@ -16,5 +16,4 @@
 #define NEW_BOARD_VER	0
 
 
-
 #endif /* SETUP_H_ */

@@ -29,10 +29,6 @@
 #define PSA(_NAME) const char PROGMEM _NAME []
 
 
-P(ack);
-P(nak);
-P(dtx);
-
 void write_page_to_flash_mem(uint32_t strona, uint8_t *buf) BOOTLOADER_SECTION;
 
 namespace rx_id{
@@ -40,7 +36,8 @@ namespace rx_id{
 		txt_command,
 		write_at,
 		rxflush,
-		fail,
+		bootloader=11,
+		fail=255,
 	};
 }
 

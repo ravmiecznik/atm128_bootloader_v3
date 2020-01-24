@@ -12,25 +12,12 @@
 #include <avr/io.h>
 #include "setup.h"
 #include "circbuffer_bootloader/cirbuffer_b.h"
+#include "avr_message_sender_bootloader/avr_txmessage_sender.h"
 #include <stdio.h>
 
-
-
-/****************************************************************/
-/*
- * Configuration of standard output for functions printf, printf_p and so on
- */
-static int put(char c, FILE *stream){
-	uart1_putc(c);
-	return 0;
+void print(const char* str){
+	uart1_puts(str);
 }
-//static FILE uartout = {0};
-//void setup_stdout_for_printf(){
-//	fdev_setup_stream(&uartout, put, NULL, _FDEV_SETUP_WRITE);
-//	stdout = &uartout;
-//	stderr = &uartout;
-//}
-/****************************************************************/
 
 
 int main(){
@@ -51,7 +38,6 @@ int main(){
 	uart1_init(115200);
 	//_delay_ms(500);
 	CircBufferB cbuffer;
-
 	//sei();
 
 #if NEW_BOARD_VER == 1
@@ -63,14 +49,16 @@ int main(){
 #endif
 
 		{
-			uint16_t cnt=0;
+			uint32_t cnt=0;
 			PIN_HI(PORTD, LED_RED);
 			_delay_ms(50);
 			PIN_LO(PORTD, LED_RED);
 			while(1){
 				//MAIN HERE
-				if(not(cnt%10000))
+				if(not(cnt%10000)){
 					PORTD ^= _BV(LED_BLUE);
+					//print("BOOTLOADER\n");
+				}
 				cnt++;
 
 				if(uart1_available()){
@@ -80,19 +68,20 @@ int main(){
 				}
 
 				//periodic check of cbuffer
-				if((not (cnt%50000)) and cbuffer.available()){
+				if((not (cnt%5000)) and cbuffer.available()){
 					RxMessage rxmessage(cbuffer);
 					rx_id::id msg_id = rxmessage.msg_id();
 					switch (msg_id) {
 						case rx_id::fail:
-							//printf_P(nak);
+							print("nak\n");
 							break;
 						case rx_id::write_at:
 							//write_page_to_flash_mem(0, (uint8_t*)"");
-							//printf_P(ack);
+							print("ack\n");
 							break;
-						case rx_id::txt_command:
-							//printf_P(ack);
+						case rx_id::bootloader:
+							TxMessage(tx_id::txt, rxmessage.header.context).sends("bootloader3\n");
+							//cbuffer.flush();
 							break;
 						default:
 							cbuffer.flush(sizeof(MessageHeader));
