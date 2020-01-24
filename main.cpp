@@ -34,11 +34,9 @@ int main(){
 	DDRB &= ~_BV(BOOTLOADER_PINB);
 	PIN_HI(PORTB, BOOTLOADER_PINB);
 #endif
-	//setup_stdout_for_printf();
-	uart1_init(115200);
-	//_delay_ms(500);
-	CircBufferB cbuffer;
-	//sei();
+
+uart1_init(115200);
+CircBufferB cbuffer;
 
 #if NEW_BOARD_VER == 1
 		//new board
@@ -54,10 +52,9 @@ int main(){
 			_delay_ms(50);
 			PIN_LO(PORTD, LED_RED);
 			while(1){
-				//MAIN HERE
+				//MAIN LOOP HERE
 				if(not(cnt%10000)){
 					PORTD ^= _BV(LED_BLUE);
-					//print("BOOTLOADER\n");
 				}
 				cnt++;
 
@@ -81,11 +78,11 @@ int main(){
 							break;
 						case rx_id::bootloader:
 							TxMessage(tx_id::txt, rxmessage.header.context).sends("bootloader3\n");
-							//cbuffer.flush();
+							cbuffer.flush();
 							break;
 						default:
 							cbuffer.flush(sizeof(MessageHeader));
-							//printf_P(dtx);
+							print("dtx\n");
 							break;
 					}
 				}
