@@ -94,7 +94,7 @@ int main(){
 							}
 								break;
 							default:
-								cbuffer.flush(sizeof(MessageHeader));
+								cbuffer.flush();
 								TxMessage(tx_id::dtx, rxmessage.header.context);
 								break;
 						}
