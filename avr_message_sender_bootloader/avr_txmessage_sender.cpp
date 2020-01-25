@@ -37,11 +37,6 @@ void TxMessage::_putchar(char c){
 	uart1_putc(c);
 }
 
-//int Message::_putchar_f(char c, FILE* f){
-//	usart.Putchar(c);
-//	return 1;
-//}
-
 void TxMessage::send(char* buffer, uint16_t amount){
 	for(uint16_t i=0; i<amount; i++){
 		tail.msg_len++;
