@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include "../setup.h"
 
-#define CBUFFER_SIZE (SINGLE_PACKET_SIZE + 0)
+#define CBUFFER_SIZE (SINGLE_PACKET_SIZE + 30)
 
 class CircBufferB {
 public:
@@ -30,7 +30,7 @@ public:
 	void flush(uint32_t amount);
 	void peek_sync(CircBufferB* peek_cbuffer);
 	CircBufferB peek();
-
+	uint16_t get_uint16t();
 };
 
 

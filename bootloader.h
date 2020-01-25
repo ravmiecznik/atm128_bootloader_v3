@@ -10,6 +10,7 @@
 
 #include <avr/boot.h>
 #include "circbuffer_bootloader/cirbuffer_b.h"
+#include "avr_message_sender_bootloader/avr_txmessage_sender.h"
 #include <avr/pgmspace.h>
 
 #define LED_RED PD6
@@ -29,7 +30,6 @@
 #define PSA(_NAME) const char PROGMEM _NAME []
 
 
-void write_page_to_flash_mem(uint32_t strona, uint8_t *buf) BOOTLOADER_SECTION;
 
 namespace rx_id{
 	enum id{
@@ -37,6 +37,7 @@ namespace rx_id{
 		write_at,
 		rxflush,
 		bootloader=11,
+		run_main_app=254,
 		fail=255,
 	};
 }
@@ -58,6 +59,7 @@ public:
 	uint8_t _header[sizeof(MessageHeader)];
 	MessageHeader& header;
 public:
+	CircBufferB& buffer;
 	RxMessage(CircBufferB& cbuffer);
 	bool check_header(CircBufferB& peek);
 	rx_id::id msg_id();
@@ -66,5 +68,7 @@ public:
 
 rx_id::id message(CircBufferB& cbuffer);
 
+void write_page_to_flash_mem(uint32_t strona, uint8_t *buf) BOOTLOADER_SECTION;
+void write_packet_to_flash_mem(RxMessage rxmessage);
 
 #endif /* BOOTLOADER_H_ */

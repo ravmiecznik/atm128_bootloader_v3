@@ -20,6 +20,9 @@ CircBufferB::CircBufferB(CircBufferB* cbuffer_ptr){
 }
 
 bool CircBufferB::put(uint8_t byte){
+	/*
+	 * Put single byte
+	 */
 	if(free_space() == 0){
 		return false;
 	}
@@ -34,6 +37,9 @@ bool CircBufferB::put(uint8_t byte){
 }
 
 uint8_t CircBufferB::get(){
+	/*
+	 * Get single byte
+	 */
 	uint8_t byte;
 	if(available()){
 		byte = buffer[head];
@@ -52,6 +58,9 @@ uint16_t CircBufferB::available(){
 }
 
 uint16_t CircBufferB::free_space(){
+	/*
+	 * Check free space
+	 */
 	return CBUFFER_SIZE - available();
 }
 
@@ -62,6 +71,9 @@ void CircBufferB::flush(){
 }
 
 void CircBufferB::flush(uint32_t amount){
+	/*
+	 * Flush cubuffer of 'amount' bytes
+	 */
 	while(amount--)
 		get();
 }
@@ -73,4 +85,15 @@ CircBufferB CircBufferB::peek(){
 	 * In practice this is just freeze state of real CircBuffer can be used to peek
 	 */
 	return CircBufferB(this);
+}
+
+uint16_t CircBufferB::get_uint16t(){
+	/*
+	 * Get two bytes from cbuffer as uint16_t
+	 */
+	uint16_t value=0;
+	for(uint8_t i=0; i<sizeof(uint16_t); i++){
+		value += get()<<(8*i);
+	}
+	return value;
 }

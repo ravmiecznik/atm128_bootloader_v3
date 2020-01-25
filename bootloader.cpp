@@ -36,11 +36,14 @@ void write_page_to_flash_mem(uint32_t page, uint8_t *buf){
 	SREG = sreg;					  //restore SREG
 }
 
-RxMessage::RxMessage(CircBufferB& cbuffer):header((MessageHeader&)*_header){
+RxMessage::RxMessage(CircBufferB& cbuffer):header((MessageHeader&)*_header), buffer(cbuffer){
 	CircBufferB peek = cbuffer.peek();
 	if(not check_header(peek)){
 		cbuffer.flush();
 		header.id = rx_id::fail;
+	}
+	else{
+		buffer.flush(sizeof(MessageHeader));
 	}
 }
 
@@ -80,3 +83,26 @@ rx_id::id message(CircBufferB& cbuffer){
 RxMessage::operator rx_id::id(){
 	return (rx_id::id)header.id;
 }
+
+
+void write_packet_to_flash_mem(RxMessage rxmessage){
+	CircBufferB& cbuffer = rxmessage.buffer;
+	if(cbuffer.available() >= rxmessage.header.msg_len){
+		uint8_t* buffer = &cbuffer.buffer[sizeof(MessageHeader)];
+		uint16_t packet_num = cbuffer.get_uint16t();
+		for(uint16_t i=0; i<SINGLE_PACKET_SIZE; i+=SPM_PAGESIZE){
+			write_page_to_flash_mem(packet_num*SINGLE_PACKET_SIZE + i, &cbuffer.buffer[sizeof(MessageHeader) + i + sizeof(uint16_t)]);
+			TOGGLE(PORTD, LED_RED);
+		}
+		cbuffer.flush();
+		PIN_LO(PORTD, LED_RED);
+		TxMessage(tx_id::ack_feedback, rxmessage.header.context);
+	}
+	else{
+		TxMessage(tx_id::dtx, rxmessage.header.context).sends("dtx");
+	}
+}
+
+
+
+
