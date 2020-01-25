@@ -6,6 +6,7 @@
  */
 
 #include "avr_message_receiver_b.h"
+#include <avr/crc16.h>
 
 
 RxMessage::RxMessage(CircBufferB& cbuffer):header((MessageHeader&)*_header), buffer(cbuffer){
@@ -37,7 +38,7 @@ bool RxMessage::check_header(CircBufferB& peek){
 					_header[i] = peek.get();
 				}
 				//check header integrity
-				if(_header[sizeof(MessageHeader)-1] == HEADER_END)
+				if( (_header[sizeof(MessageHeader)-1] == HEADER_END))
 					return true;
 			}
 		}
@@ -56,3 +57,24 @@ RxMessage::operator rx_id::id(){
 	return (rx_id::id)header.id;
 }
 
+bool check_crc(RxMessage& message){
+	/*
+	 * Msg should be at relational pos 0 (not absolute) in cbuffer
+	 */
+	CircBufferB& buffer = message.buffer;
+	CircBufferB peek = buffer.peek();
+	uint32_t cnt = message.header.msg_len;
+	uint16_t calc_crc = 0;
+	char c;
+
+	buffer.peek_sync(&peek);
+	while(cnt--){
+		c = peek.get();
+		//print_buff_char(c);
+		calc_crc = _crc_xmodem_update(calc_crc, c);
+	}
+	if(calc_crc != message.header.crc){
+		message.header.id = rx_id::fail;
+	}
+	return calc_crc == message.header.crc;
+}

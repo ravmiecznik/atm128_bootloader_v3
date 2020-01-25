@@ -87,6 +87,12 @@ CircBufferB CircBufferB::peek(){
 	return CircBufferB(this);
 }
 
+void CircBufferB::peek_sync(CircBufferB* peek_cbuffer){
+	peek_cbuffer->_available = _available;
+	peek_cbuffer->head = head;
+	peek_cbuffer->tail = tail;
+}
+
 uint16_t CircBufferB::get_uint16t(){
 	/*
 	 * Get two bytes from cbuffer as uint16_t

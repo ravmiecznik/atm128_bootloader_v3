@@ -71,32 +71,37 @@ int main(){
 				if((not (cnt%5000)) and cbuffer.available()){
 					RxMessage rxmessage(cbuffer);
 					rx_id::id msg_id = rxmessage.msg_id();
-
-					//command handler
-					switch (msg_id) {
-						case rx_id::fail:
-							TxMessage(tx_id::nak_feedback);
-							break;
-						case rx_id::write_at:
-						{
-							write_packet_to_flash_mem(rxmessage);
+					if(check_crc(rxmessage)){
+						//command handler
+						switch (msg_id) {
+							case rx_id::fail:
+								TxMessage(tx_id::nak_feedback);
+								break;
+							case rx_id::write_at:
+							{
+								write_packet_to_flash_mem(rxmessage);
+							}
+								break;
+							case rx_id::bootloader:
+								TxMessage(tx_id::txt, rxmessage.header.context).sends(bootloader_handshake);
+								cbuffer.flush();
+								break;
+							case rx_id::run_main_app:
+							{
+								TxMessage(tx_id::txt).sends("STARTING MAIN APP");
+								main_app main_app_ptr = (main_app)0;
+								main_app_ptr();
+							}
+								break;
+							default:
+								cbuffer.flush(sizeof(MessageHeader));
+								TxMessage(tx_id::dtx, rxmessage.header.context);
+								break;
 						}
-							break;
-						case rx_id::bootloader:
-							TxMessage(tx_id::txt, rxmessage.header.context).sends(bootloader_handshake);
-							cbuffer.flush();
-							break;
-						case rx_id::run_main_app:
-						{
-							TxMessage(tx_id::txt).sends("STARTING MAIN APP");
-							main_app main_app_ptr = (main_app)0;
-							main_app_ptr();
-						}
-							break;
-						default:
-							cbuffer.flush(sizeof(MessageHeader));
-							TxMessage(tx_id::dtx, rxmessage.header.context);
-							break;
+					}
+					//else check crc
+					else{
+						TxMessage(tx_id::nak_feedback, rxmessage.header.context);
 					}
 				}
 			}

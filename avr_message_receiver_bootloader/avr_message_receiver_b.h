@@ -48,6 +48,7 @@ public:
 
 rx_id::id message(CircBufferB& cbuffer);
 
+bool check_crc(RxMessage& message);
 
 
 #endif /* AVR_MESSAGE_RECEIVER_BOOTLOADER_AVR_MESSAGE_RECEIVER_B_H_ */
