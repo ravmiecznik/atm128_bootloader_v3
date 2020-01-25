@@ -10,6 +10,7 @@
 
 #include <avr/boot.h>
 #include "circbuffer_bootloader/cirbuffer_b.h"
+#include "avr_message_receiver_bootloader/avr_message_receiver_b.h"
 #include "avr_message_sender_bootloader/avr_txmessage_sender.h"
 #include <avr/pgmspace.h>
 
@@ -22,51 +23,6 @@
 #define PIN_LO(PORT, PIN) PORT &= ~_BV(PIN);
 #define PIN_VAL(PORT, PIN) (PORT & _BV(PIN))
 #define MOSI_PIN PE0
-
-//this macro will create string in PGMSPACE with the same content as name like: rav = "rav"
-#define P(_NAME) const char PROGMEM _NAME [] = #_NAME
-
-//this macro will create only PGM array name (PROGMEM STRING ARRAY)
-#define PSA(_NAME) const char PROGMEM _NAME []
-
-
-
-namespace rx_id{
-	enum id{
-		txt_command,
-		write_at,
-		rxflush,
-		bootloader=11,
-		run_main_app=254,
-		fail=255,
-	};
-}
-
-#define HEADER_START '>'
-#define HEADER_END '<'
-
-struct MessageHeader{
-	char 		head_start;	//'>'
-	uint16_t	id;
-	uint16_t	context;
-	uint32_t 	msg_len;
-	uint16_t	crc;
-	char		head_end;	//'<'
-};
-
-class RxMessage{
-public:
-	uint8_t _header[sizeof(MessageHeader)];
-	MessageHeader& header;
-public:
-	CircBufferB& buffer;
-	RxMessage(CircBufferB& cbuffer);
-	bool check_header(CircBufferB& peek);
-	rx_id::id msg_id();
-	operator rx_id::id();
-};
-
-rx_id::id message(CircBufferB& cbuffer);
 
 void write_page_to_flash_mem(uint32_t strona, uint8_t *buf) BOOTLOADER_SECTION;
 void write_packet_to_flash_mem(RxMessage rxmessage);
