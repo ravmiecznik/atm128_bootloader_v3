@@ -12,6 +12,7 @@ TODO:   32.12.2019
         RxMessage must calculate CRC
         TxMessage must be implemented
         After removal of printf of stdout.h implement puts function in uart, removal of printf frees extra 2kbytes of program size
+        
         25.01.2020
         Support bootloader_activate flag in eeprom
         Update write_to_flash_mem function pointer, it was changed after Bootloader rework
