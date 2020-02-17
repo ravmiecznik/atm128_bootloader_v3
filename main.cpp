@@ -70,8 +70,7 @@ int main(){
 		if(bootloader_flag or PINE & _BV(BOOTLOADER_PINE))
 #else
 		//old board
-		//if((PINB & _BV(BOOTLOADER_PINB)) or bootloader_flag)
-			if(bootloader_flag or (PINB & _BV(BOOTLOADER_PINB)))
+		if(bootloader_flag or (PINB & _BV(BOOTLOADER_PINB)))
 #endif
 
 		{
