@@ -24,7 +24,20 @@
 #define PIN_VAL(PORT, PIN) (PORT & _BV(PIN))
 #define MOSI_PIN PE0
 
-void write_page_to_flash_mem(uint32_t strona, uint8_t *buf) BOOTLOADER_SECTION;
+void write_page_to_flash_mem(uint32_t page, uint8_t *buf) BOOTLOADER_SECTION;
 void write_packet_to_flash_mem(RxMessage rxmessage);
+
+//this macro will create string in PGMSPACE with the same content as name like: rav = "rav"
+#define P(_NAME) const char BOOTLOADER_SECTION PROGMEM _NAME [] = #_NAME
+
+//this macro will create only PGM array name (PROGMEM STRING ARRAY)
+#define PSA(_NAME) const char PROGMEM _NAME []
+
+P(bootloader3);
+PSA(starting_main_app) = "STARTING MAIN APP";
+PSA(welcome_msg) = ""
+		"\n-----BOOTLOADER3-----\n"
+		"Compilation date:\n";
+PSA(compilation_date) = __DATE__;
 
 #endif /* BOOTLOADER_H_ */

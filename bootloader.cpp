@@ -36,22 +36,19 @@ void write_page_to_flash_mem(uint32_t page, uint8_t *buf){
 	SREG = sreg;					  //restore SREG
 }
 
+void (*fun)(uint32_t, uint8_t*) __attribute__((section(".vectors"))) = write_page_to_flash_mem;
+
 void write_packet_to_flash_mem(RxMessage rxmessage){
 	CircBufferB& cbuffer = rxmessage.buffer;
-	if(cbuffer.available() >= rxmessage.header.msg_len){
-		uint8_t* buffer = &cbuffer.buffer[sizeof(MessageHeader)];
+		//uint8_t* buffer = &cbuffer.buffer[sizeof(MessageHeader)];
 		uint16_t packet_num = cbuffer.get_uint16t();	//first two bytes contains target packet number
 		for(uint16_t i=0; i<SINGLE_PACKET_SIZE; i+=SPM_PAGESIZE){
 			write_page_to_flash_mem(packet_num*SINGLE_PACKET_SIZE + i, &cbuffer.buffer[sizeof(MessageHeader) + i + sizeof(uint16_t)]);
 			TOGGLE(PORTD, LED_RED);
 		}
-		cbuffer.flush();
 		PIN_LO(PORTD, LED_RED);
 		TxMessage(tx_id::ack_feedback, rxmessage.header.context);
-	}
-	else{
-		TxMessage(tx_id::dtx, rxmessage.header.context).sends("dtx");
-	}
+
 }
 
 

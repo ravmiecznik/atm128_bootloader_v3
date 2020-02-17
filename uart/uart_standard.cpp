@@ -36,7 +36,7 @@ void uart1_puts_p(const char *progmem_s )
 {
 	register char c;
 
-	while ( (c = pgm_read_byte(progmem_s++)) ) {
+	while ( (c = pgm_read_byte_far(progmem_s++)) ) {
 		uart1_putc(c);
 	}
 

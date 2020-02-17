@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include "../setup.h"
+#include <avr/pgmspace.h>
 
 #define TAIL_START_MARK	'<'
 #define TAIL_END_MARK	'>'
@@ -64,7 +65,9 @@ public:
 	void 	send(char*, uint16_t);
 	void 	send(char c);
 	void 	sends(char*);
+	TxMessage& 	sends_P(const char*);
 	void	fetch_str(char*);
+	void 	fetch_str_P(const char* pgmaddr);
 	void 	fetch_byte(uint8_t c);
 	void	send_tail();
 };

@@ -61,13 +61,13 @@ bool check_crc(RxMessage& message){
 	/*
 	 * Msg should be at relational pos 0 (not absolute) in cbuffer
 	 */
-	CircBufferB& buffer = message.buffer;
-	CircBufferB peek = buffer.peek();
+	//CircBufferB& buffer = message.buffer;
+	CircBufferB peek = message.buffer.peek();
 	uint32_t cnt = message.header.msg_len;
 	uint16_t calc_crc = 0;
 	char c;
 
-	buffer.peek_sync(&peek);
+	//buffer.peek_sync(&peek);
 	while(cnt--){
 		c = peek.get();
 		//print_buff_char(c);

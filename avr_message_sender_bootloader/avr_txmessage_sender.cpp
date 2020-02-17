@@ -64,11 +64,25 @@ void TxMessage::fetch_str(char* buffer){
 	}
 }
 
+void TxMessage::fetch_str_P(const char* buffer){
+	register char c;
+	while(c = pgm_read_byte_far(buffer++)){
+		tail.msg_len++;
+		tail.msg_crc = _crc_xmodem_update(tail.msg_crc, c);
+		uart1_putc(c);
+	}
+}
+
 void TxMessage::sends(char* buffer){
 	fetch_str(buffer);
 	send_tail();
 }
 
+TxMessage& TxMessage::sends_P(const char* buffer){
+	fetch_str_P(buffer);
+	send_tail();
+	return *this;
+}
 
 void TxMessage::fetch_byte(uint8_t c){
 	uart1_putc(c);
