@@ -111,7 +111,7 @@ int main(){
 								cbuffer.flush();
 							}
 								break;
-							case rx_id::bootloader:
+							case rx_id::bootloader_old:
 								handshake();
 								cbuffer.flush();
 								break;

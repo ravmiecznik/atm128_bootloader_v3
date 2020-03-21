@@ -16,7 +16,7 @@ namespace rx_id{
 		txt_command,
 		write_at,
 		rxflush,
-		bootloader=11,
+		bootloader_old=11,
 		run_main_app=254,
 		fail=255,
 	};
