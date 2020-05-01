@@ -46,7 +46,7 @@ public:
 	operator rx_id::id();
 };
 
-rx_id::id message(CircBufferB& cbuffer);
+//rx_id::id message(CircBufferB& cbuffer);
 
 bool check_crc(RxMessage& message);
 

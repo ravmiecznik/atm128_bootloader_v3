@@ -95,43 +95,47 @@ int main(){
 				}
 
 				//periodic check of cbuffer
-				if((not (cnt%5000)) and cbuffer.available()){
+				if((not (cnt%4000)) and cbuffer.available()){
 					RxMessage rxmessage(cbuffer);
 					rx_id::id msg_id = rxmessage.msg_id();
 
-					if(cbuffer.available() >= rxmessage.header.msg_len and check_crc(rxmessage)){
-						//command handler
-						switch (msg_id) {
-							case rx_id::fail:
-								TxMessage(tx_id::nak_feedback);
-								break;
-							case rx_id::write_at:
-							{
-								write_packet_to_flash_mem(rxmessage);
-								cbuffer.flush();
+					if(cbuffer.available() >= rxmessage.header.msg_len){
+						if (check_crc(rxmessage)){
+							//command handler
+							switch (msg_id) {
+								case rx_id::fail:
+									TxMessage(tx_id::nak_feedback);
+									break;
+								case rx_id::write_at:
+								{
+									write_packet_to_flash_mem(rxmessage);
+									cbuffer.flush();
+								}
+									break;
+								case rx_id::bootloader_old:
+									handshake();
+									cbuffer.flush();
+									break;
+								case rx_id::run_main_app:
+								{
+									TxMessage(tx_id::txt).sends_P(starting_main_app);
+									// TODO: this is wrong !!!
+									// TODO: bootloader must be disabled in main app, what if upload was wrong ?!
+									eeprom_write_byte(&BOOTLOADER_FLAG, false);
+									main_app_ptr();
+								}
+									break;
+								default:
+									cbuffer.flush();
+									TxMessage(tx_id::dtx, rxmessage.header.context);
+									break;
 							}
-								break;
-							case rx_id::bootloader_old:
-								handshake();
-								cbuffer.flush();
-								break;
-							case rx_id::run_main_app:
-							{
-								TxMessage(tx_id::txt).sends_P(starting_main_app);
-								eeprom_write_byte(&BOOTLOADER_FLAG, false);
-								main_app_ptr();
-							}
-								break;
-							default:
-								cbuffer.flush();
-								TxMessage(tx_id::dtx, rxmessage.header.context);
-								break;
 						}
-					}
-					//else check crc
-					else{
-						TxMessage(tx_id::nak_feedback, rxmessage.header.context).sends("mainloop");
-						cbuffer.flush();
+						//else check crc
+						else{
+							TxMessage(tx_id::nak_feedback, rxmessage.header.context).sends("mainloop nack");
+							cbuffer.flush();
+						}
 					}
 				}
 			}

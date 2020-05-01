@@ -47,11 +47,11 @@ bool RxMessage::check_header(CircBufferB& peek){
 	return false;
 }
 
-rx_id::id message(CircBufferB& cbuffer){
-	CircBufferB peek(cbuffer);
-
-	return rx_id::fail;
-}
+//rx_id::id message(CircBufferB& cbuffer){
+//	CircBufferB peek(cbuffer);
+//
+//	return rx_id::fail;
+//}
 
 RxMessage::operator rx_id::id(){
 	return (rx_id::id)header.id;
