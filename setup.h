@@ -12,7 +12,7 @@
 
 #define BUFF_SIZ_MULTIPLIER 					8
 #define SINGLE_PACKET_SIZE 						(SPM_PAGESIZE*BUFF_SIZ_MULTIPLIER)
-#define NEW_BOARD_VER	0
+#define NEW_BOARD_VER	1
 
 
 #endif /* SETUP_H_ */
